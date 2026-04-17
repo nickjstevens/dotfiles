@@ -8,6 +8,10 @@ LOCAL_EXAMPLE="$DOTFILES_DIR/bash/.bashrc.local.example"
 LOCAL_TARGET="$HOME/.bashrc.local"
 GOOSE_CONFIG_SOURCE="$DOTFILES_DIR/config/goose/config.yaml"
 GOOSE_CONFIG_TARGET="$HOME/.config/goose/config.yaml"
+FISH_CONFIG_SOURCE="$DOTFILES_DIR/config/fish/config.fish"
+FISH_CONFIG_TARGET="$HOME/.config/fish/config.fish"
+FISH_LOCAL_EXAMPLE="$DOTFILES_DIR/config/fish/config.local.example.fish"
+FISH_LOCAL_TARGET="$HOME/.config/fish/config.local.fish"
 
 backup_if_needed() {
     local target="$1"
@@ -37,6 +41,19 @@ if [ -f "$GOOSE_CONFIG_SOURCE" ]; then
     backup_if_needed "$GOOSE_CONFIG_TARGET"
     ln -sfn "$GOOSE_CONFIG_SOURCE" "$GOOSE_CONFIG_TARGET"
     echo "Linked $GOOSE_CONFIG_TARGET -> $GOOSE_CONFIG_SOURCE"
+fi
+
+if [ -f "$FISH_CONFIG_SOURCE" ]; then
+    mkdir -p "$(dirname "$FISH_CONFIG_TARGET")"
+    backup_if_needed "$FISH_CONFIG_TARGET"
+    ln -sfn "$FISH_CONFIG_SOURCE" "$FISH_CONFIG_TARGET"
+    echo "Linked $FISH_CONFIG_TARGET -> $FISH_CONFIG_SOURCE"
+fi
+
+if [ ! -e "$FISH_LOCAL_TARGET" ] && [ -f "$FISH_LOCAL_EXAMPLE" ]; then
+    mkdir -p "$(dirname "$FISH_LOCAL_TARGET")"
+    cp "$FISH_LOCAL_EXAMPLE" "$FISH_LOCAL_TARGET"
+    echo "Created $FISH_LOCAL_TARGET from example"
 fi
 
 echo "Done. Start a new shell or run: source ~/.bashrc"
