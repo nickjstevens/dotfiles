@@ -2,3 +2,7 @@
 *.swp
 *.swo
 bash/.bashrc.local
+config/goose/*.local*
+config/goose/tokens.json
+config/goose/*token*
+config/goose/*cache*
