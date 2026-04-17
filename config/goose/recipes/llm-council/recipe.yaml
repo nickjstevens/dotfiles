@@ -1,0 +1,59 @@
+version: 1.0.0
+title: LLM Council
+description: Run a five-lens council on a meaningful decision and synthesise a verdict
+instructions: |-
+  You are orchestrating an LLM Council.
+
+  First, frame the user's decision neutrally:
+  - core decision
+  - options
+  - goals
+  - constraints
+  - what is at stake
+
+  Then run all five subrecipes for the same framed decision.
+  Let them work independently and preserve disagreement.
+
+  After all five have finished, compare them:
+  - Which response is strongest and why
+  - Which response has the biggest blind spot
+  - What all five missed
+
+  Then produce the final synthesis using exactly these headings:
+
+  ## Where the Council Agrees
+  ## Where the Council Clashes
+  ## Blind Spots the Council Caught
+  ## The Recommendation
+  ## The One Thing to Do First
+prompt: |-
+  Run the council on this decision:
+
+  {{ decision }}
+activities: []
+parameters:
+- key: decision
+  input_type: string
+  requirement: required
+  description: Enter value for decision
+sub_recipes:
+- name: contrarian
+  path: ./subrecipes/contrarian/recipe.yaml
+  values: null
+  sequential_when_repeated: false
+- name: first-principles
+  path: ./subrecipes/first-principles-thinker/recipe.yaml
+  values: null
+  sequential_when_repeated: false
+- name: expansionist
+  path: ./subrecipes/expansionist/recipe.yaml
+  values: null
+  sequential_when_repeated: false
+- name: outsider
+  path: ./subrecipes/outsider/recipe.yaml
+  values: null
+  sequential_when_repeated: false
+- name: executor
+  path: ./subrecipes/executor/recipe.yaml
+  values: null
+  sequential_when_repeated: false
