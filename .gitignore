@@ -8,3 +8,4 @@ config/goose/*token*
 config/goose/*cache*
 .omx/
 config/fish/*.local*
+!config/fish/*.local.example.fish
