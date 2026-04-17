@@ -1,0 +1,4 @@
+# Machine-specific Bash customizations kept out of git
+# Examples:
+# export WORKON_HOME="$HOME/.virtualenvs"
+# export SOME_API_URL="https://example.internal"
