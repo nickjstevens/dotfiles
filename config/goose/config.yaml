@@ -152,3 +152,6 @@ gateway_pairings:
     paired_at: 1776446575
 GOOSE_MAX_TURNS: 10000
 GOOSE_SUBAGENT_MAX_TURNS: 1000
+slash_commands:
+- command: council
+  recipe_path: /home/nick/.config/goose/recipes/llm-council.yaml

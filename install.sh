@@ -8,6 +8,8 @@ LOCAL_EXAMPLE="$DOTFILES_DIR/bash/.bashrc.local.example"
 LOCAL_TARGET="$HOME/.bashrc.local"
 GOOSE_CONFIG_SOURCE="$DOTFILES_DIR/config/goose/config.yaml"
 GOOSE_CONFIG_TARGET="$HOME/.config/goose/config.yaml"
+GOOSE_RECIPES_SOURCE="$DOTFILES_DIR/config/goose/recipes"
+GOOSE_RECIPES_TARGET="$HOME/.config/goose/recipes"
 FISH_CONFIG_SOURCE="$DOTFILES_DIR/config/fish/config.fish"
 FISH_CONFIG_TARGET="$HOME/.config/fish/config.fish"
 FISH_LOCAL_EXAMPLE="$DOTFILES_DIR/config/fish/config.local.example.fish"
@@ -45,6 +47,13 @@ if [ -f "$GOOSE_CONFIG_SOURCE" ]; then
     backup_if_needed "$GOOSE_CONFIG_TARGET"
     ln -sfn "$GOOSE_CONFIG_SOURCE" "$GOOSE_CONFIG_TARGET"
     echo "Linked $GOOSE_CONFIG_TARGET -> $GOOSE_CONFIG_SOURCE"
+fi
+
+if [ -d "$GOOSE_RECIPES_SOURCE" ]; then
+    mkdir -p "$(dirname "$GOOSE_RECIPES_TARGET")"
+    backup_if_needed "$GOOSE_RECIPES_TARGET"
+    ln -sfn "$GOOSE_RECIPES_SOURCE" "$GOOSE_RECIPES_TARGET"
+    echo "Linked $GOOSE_RECIPES_TARGET -> $GOOSE_RECIPES_SOURCE"
 fi
 
 if [ -f "$FISH_CONFIG_SOURCE" ]; then
