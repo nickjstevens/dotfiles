@@ -12,6 +12,8 @@ FISH_CONFIG_SOURCE="$DOTFILES_DIR/config/fish/config.fish"
 FISH_CONFIG_TARGET="$HOME/.config/fish/config.fish"
 FISH_LOCAL_EXAMPLE="$DOTFILES_DIR/config/fish/config.local.example.fish"
 FISH_LOCAL_TARGET="$HOME/.config/fish/config.local.fish"
+KITTY_CONFIG_SOURCE="$DOTFILES_DIR/config/kitty/kitty.conf"
+KITTY_CONFIG_TARGET="$HOME/.config/kitty/kitty.conf"
 
 backup_if_needed() {
     local target="$1"
@@ -54,6 +56,13 @@ if [ ! -e "$FISH_LOCAL_TARGET" ] && [ -f "$FISH_LOCAL_EXAMPLE" ]; then
     mkdir -p "$(dirname "$FISH_LOCAL_TARGET")"
     cp "$FISH_LOCAL_EXAMPLE" "$FISH_LOCAL_TARGET"
     echo "Created $FISH_LOCAL_TARGET from example"
+fi
+
+if [ -f "$KITTY_CONFIG_SOURCE" ]; then
+    mkdir -p "$(dirname "$KITTY_CONFIG_TARGET")"
+    backup_if_needed "$KITTY_CONFIG_TARGET"
+    ln -sfn "$KITTY_CONFIG_SOURCE" "$KITTY_CONFIG_TARGET"
+    echo "Linked $KITTY_CONFIG_TARGET -> $KITTY_CONFIG_SOURCE"
 fi
 
 echo "Done. Start a new shell or run: source ~/.bashrc"
