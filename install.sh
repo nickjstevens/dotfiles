@@ -14,6 +14,8 @@ FISH_LOCAL_EXAMPLE="$DOTFILES_DIR/config/fish/config.local.example.fish"
 FISH_LOCAL_TARGET="$HOME/.config/fish/config.local.fish"
 KITTY_CONFIG_SOURCE="$DOTFILES_DIR/config/kitty/kitty.conf"
 KITTY_CONFIG_TARGET="$HOME/.config/kitty/kitty.conf"
+POLPO_SERVICE_SOURCE="$DOTFILES_DIR/config/systemd/user/polpo.service"
+POLPO_SERVICE_TARGET="$HOME/.config/systemd/user/polpo.service"
 
 backup_if_needed() {
     local target="$1"
@@ -63,6 +65,16 @@ if [ -f "$KITTY_CONFIG_SOURCE" ]; then
     backup_if_needed "$KITTY_CONFIG_TARGET"
     ln -sfn "$KITTY_CONFIG_SOURCE" "$KITTY_CONFIG_TARGET"
     echo "Linked $KITTY_CONFIG_TARGET -> $KITTY_CONFIG_SOURCE"
+fi
+
+if [ -f "$POLPO_SERVICE_SOURCE" ]; then
+    mkdir -p "$(dirname "$POLPO_SERVICE_TARGET")"
+    backup_if_needed "$POLPO_SERVICE_TARGET"
+    ln -sfn "$POLPO_SERVICE_SOURCE" "$POLPO_SERVICE_TARGET"
+    echo "Linked $POLPO_SERVICE_TARGET -> $POLPO_SERVICE_SOURCE"
+    systemctl --user daemon-reload
+    systemctl --user enable --now polpo.service
+    echo "Enabled and started polpo.service"
 fi
 
 echo "Done. Start a new shell or run: source ~/.bashrc"

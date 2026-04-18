@@ -1,0 +1,15 @@
+[Unit]
+Description=Polpo server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/nick/polpo
+ExecStart=/usr/bin/node /home/nick/polpo/bin/polpo.js server
+Restart=on-failure
+RestartSec=5
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=default.target
