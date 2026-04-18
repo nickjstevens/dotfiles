@@ -16,6 +16,10 @@ FISH_LOCAL_EXAMPLE="$DOTFILES_DIR/config/fish/config.local.example.fish"
 FISH_LOCAL_TARGET="$HOME/.config/fish/config.local.fish"
 KITTY_CONFIG_SOURCE="$DOTFILES_DIR/config/kitty/kitty.conf"
 KITTY_CONFIG_TARGET="$HOME/.config/kitty/kitty.conf"
+GHOSTTY_WRAPPER_SOURCE="$DOTFILES_DIR/bin/ghostty"
+GHOSTTY_WRAPPER_TARGET="$HOME/.local/bin/ghostty"
+GHOSTTY_DESKTOP_SOURCE="$DOTFILES_DIR/local/share/applications/com.mitchellh.ghostty.desktop"
+GHOSTTY_DESKTOP_TARGET="$HOME/.local/share/applications/com.mitchellh.ghostty.desktop"
 POLPO_SERVICE_SOURCE="$DOTFILES_DIR/config/systemd/user/polpo.service"
 POLPO_SERVICE_TARGET="$HOME/.config/systemd/user/polpo.service"
 
@@ -74,6 +78,21 @@ if [ -f "$KITTY_CONFIG_SOURCE" ]; then
     backup_if_needed "$KITTY_CONFIG_TARGET"
     ln -sfn "$KITTY_CONFIG_SOURCE" "$KITTY_CONFIG_TARGET"
     echo "Linked $KITTY_CONFIG_TARGET -> $KITTY_CONFIG_SOURCE"
+fi
+
+if [ -f "$GHOSTTY_WRAPPER_SOURCE" ]; then
+    mkdir -p "$(dirname "$GHOSTTY_WRAPPER_TARGET")"
+    backup_if_needed "$GHOSTTY_WRAPPER_TARGET"
+    ln -sfn "$GHOSTTY_WRAPPER_SOURCE" "$GHOSTTY_WRAPPER_TARGET"
+    chmod +x "$GHOSTTY_WRAPPER_SOURCE"
+    echo "Linked $GHOSTTY_WRAPPER_TARGET -> $GHOSTTY_WRAPPER_SOURCE"
+fi
+
+if [ -f "$GHOSTTY_DESKTOP_SOURCE" ]; then
+    mkdir -p "$(dirname "$GHOSTTY_DESKTOP_TARGET")"
+    backup_if_needed "$GHOSTTY_DESKTOP_TARGET"
+    ln -sfn "$GHOSTTY_DESKTOP_SOURCE" "$GHOSTTY_DESKTOP_TARGET"
+    echo "Linked $GHOSTTY_DESKTOP_TARGET -> $GHOSTTY_DESKTOP_SOURCE"
 fi
 
 if [ -f "$POLPO_SERVICE_SOURCE" ]; then
