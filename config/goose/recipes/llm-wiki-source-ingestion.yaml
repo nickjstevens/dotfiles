@@ -1,17 +1,1 @@
-version: 1.0.0
-title: LLM Wiki Source Ingestion
-description: A recipe for ingesting new source files into a markdown knowledge vault and propagating their insights into durable wiki pages. It helps maintain structured notes, cross-links, provenance, and operational logs without modifying raw evidence files.
-instructions: |
-  For the llm-wiki folder, ingest new files in the raw/inbox folder. 
-  
-  When ingesting new source material, treat raw files as immutable evidence and update only the wiki layer. First read the vault index, recent log entries, and the most relevant existing pages. Then review the new source, create or update a source note with a concise summary, key claims, important details, connections, open questions, and explicit provenance back to the raw file.
-  
-  Propagate durable knowledge into the appropriate entity, concept, synthesis, question, and timeline pages, preferring updates to existing pages over near-duplicates. Maintain required frontmatter, update the page's updated date whenever materially changing it, add internal links aggressively, update the index when new durable pages are created, and append a canonical log entry describing the ingest, touched pages, key changes, and open questions. Preserve contradictions rather than flattening them, and never modify files under raw/ unless explicitly instructed.
-  
-activities:
-- Ingest inbox PDFs
-- Create source notes
-- Update concept pages
-- Refresh synthesis pages
-- Append ingest log
-parameters: []
+llm-wiki-source-ingestion/recipe.yaml

@@ -30,6 +30,13 @@ prompt: |-
   Run the council on this decision:
 
   {{ decision }}
+extensions:
+- type: platform
+  name: summon
+  description: ''
+  display_name: null
+  bundled: null
+  available_tools: []
 activities: []
 parameters:
 - key: decision
