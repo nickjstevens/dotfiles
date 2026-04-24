@@ -6,7 +6,7 @@ Wants=network-online.target
 [Service]
 Type=simple
 WorkingDirectory=/home/nick/polpo
-ExecStart=/usr/bin/node /home/nick/polpo/bin/polpo.js server
+ExecStart=/usr/local/bin/polpo server
 Restart=on-failure
 RestartSec=5
 Environment=NODE_ENV=production

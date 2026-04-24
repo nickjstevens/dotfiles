@@ -22,6 +22,10 @@ GHOSTTY_DESKTOP_SOURCE="$DOTFILES_DIR/local/share/applications/com.mitchellh.gho
 GHOSTTY_DESKTOP_TARGET="$HOME/.local/share/applications/com.mitchellh.ghostty.desktop"
 POLPO_SERVICE_SOURCE="$DOTFILES_DIR/config/systemd/user/polpo.service"
 POLPO_SERVICE_TARGET="$HOME/.config/systemd/user/polpo.service"
+HERMES_SERVICE_SOURCE="$DOTFILES_DIR/config/systemd/user/hermes-gateway.service"
+HERMES_SERVICE_TARGET="$HOME/.config/systemd/user/hermes-gateway.service"
+GIT_HOOKS_SOURCE="$DOTFILES_DIR/config/git/hooks"
+GIT_HOOKS_TARGET="$HOME/.config/git/hooks"
 
 backup_if_needed() {
     local target="$1"
@@ -103,6 +107,26 @@ if [ -f "$POLPO_SERVICE_SOURCE" ]; then
     systemctl --user daemon-reload
     systemctl --user enable --now polpo.service
     echo "Enabled and started polpo.service"
+fi
+
+if [ -f "$HERMES_SERVICE_SOURCE" ]; then
+    mkdir -p "$(dirname "$HERMES_SERVICE_TARGET")"
+    backup_if_needed "$HERMES_SERVICE_TARGET"
+    ln -sfn "$HERMES_SERVICE_SOURCE" "$HERMES_SERVICE_TARGET"
+    echo "Linked $HERMES_SERVICE_TARGET -> $HERMES_SERVICE_SOURCE"
+    systemctl --user daemon-reload
+    systemctl --user enable --now hermes-gateway.service
+    echo "Enabled and started hermes-gateway.service"
+fi
+
+if [ -d "$GIT_HOOKS_SOURCE" ]; then
+    mkdir -p "$(dirname "$GIT_HOOKS_TARGET")"
+    backup_if_needed "$GIT_HOOKS_TARGET"
+    chmod +x "$GIT_HOOKS_SOURCE"/*
+    ln -sfn "$GIT_HOOKS_SOURCE" "$GIT_HOOKS_TARGET"
+    git config --global core.hooksPath "$GIT_HOOKS_TARGET"
+    echo "Linked $GIT_HOOKS_TARGET -> $GIT_HOOKS_SOURCE"
+    echo "Configured global Git hooks path: $GIT_HOOKS_TARGET"
 fi
 
 echo "Done. Start a new shell or run: source ~/.bashrc"

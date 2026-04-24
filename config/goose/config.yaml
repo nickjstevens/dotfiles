@@ -132,12 +132,10 @@ extensions:
     bundled: true
     available_tools: []
 GOOSE_TELEMETRY_ENABLED: false
-GEMINI3_THINKING_LEVEL: high
 GOOSE_PROVIDER: chatgpt_codex
 GOOSE_MODEL: gpt-5.4
-OLLAMA_HOST: localhost
 CHATGPT_CODEX_REASONING_EFFORT: high
-tunnel_auto_start: true
+tunnel_auto_start: false
 gateway_configs:
 - gateway_type: telegram
   max_sessions: 0
@@ -155,3 +153,4 @@ GOOSE_SUBAGENT_MAX_TURNS: 1000
 slash_commands:
 - command: council
   recipe_path: /home/nick/.config/goose/recipes/llm-council/recipe.yaml
+chatgpt_codex_configured: true
