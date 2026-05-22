@@ -16,6 +16,8 @@ FISH_LOCAL_EXAMPLE="$DOTFILES_DIR/config/fish/config.local.example.fish"
 FISH_LOCAL_TARGET="$HOME/.config/fish/config.local.fish"
 KITTY_CONFIG_SOURCE="$DOTFILES_DIR/config/kitty/kitty.conf"
 KITTY_CONFIG_TARGET="$HOME/.config/kitty/kitty.conf"
+GHOSTTY_CONFIG_SOURCE="$DOTFILES_DIR/config/ghostty/config"
+GHOSTTY_CONFIG_TARGET="$HOME/.config/ghostty/config"
 GHOSTTY_WRAPPER_SOURCE="$DOTFILES_DIR/bin/ghostty"
 GHOSTTY_WRAPPER_TARGET="$HOME/.local/bin/ghostty"
 GHOSTTY_DESKTOP_SOURCE="$DOTFILES_DIR/local/share/applications/com.mitchellh.ghostty.desktop"
@@ -80,6 +82,13 @@ if [ -f "$KITTY_CONFIG_SOURCE" ]; then
     backup_if_needed "$KITTY_CONFIG_TARGET"
     ln -sfn "$KITTY_CONFIG_SOURCE" "$KITTY_CONFIG_TARGET"
     echo "Linked $KITTY_CONFIG_TARGET -> $KITTY_CONFIG_SOURCE"
+fi
+
+if [ -f "$GHOSTTY_CONFIG_SOURCE" ]; then
+    mkdir -p "$(dirname "$GHOSTTY_CONFIG_TARGET")"
+    backup_if_needed "$GHOSTTY_CONFIG_TARGET"
+    ln -sfn "$GHOSTTY_CONFIG_SOURCE" "$GHOSTTY_CONFIG_TARGET"
+    echo "Linked $GHOSTTY_CONFIG_TARGET -> $GHOSTTY_CONFIG_SOURCE"
 fi
 
 if [ -f "$GHOSTTY_WRAPPER_SOURCE" ]; then
