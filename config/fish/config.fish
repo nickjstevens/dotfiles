@@ -1,5 +1,8 @@
 # Fish shell configuration tracked in ~/Documents/dotfiles/config/fish/config.fish
 
+# Suppress Fish's default greeting on interactive shell startup.
+set -g fish_greeting
+
 # fish_add_path prepends by default, so add broader paths before ~/.local/bin
 # to keep user-local wrappers highest priority. -m also fixes older saved order.
 fish_add_path -m ~/.npm-global/bin
