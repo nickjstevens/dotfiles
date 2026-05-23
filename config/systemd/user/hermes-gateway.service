@@ -1,9 +1,8 @@
 [Unit]
 Description=Hermes Agent Gateway - Messaging Platform Integration
-After=network.target network-online.target
+After=network-online.target
 Wants=network-online.target
-StartLimitIntervalSec=600
-StartLimitBurst=5
+StartLimitIntervalSec=0
 
 [Service]
 Type=simple
@@ -12,13 +11,15 @@ WorkingDirectory=/home/nick/.hermes/hermes-agent
 Environment="PATH=/home/nick/.hermes/hermes-agent/venv/bin:/home/nick/.hermes/hermes-agent/node_modules/.bin:/usr/bin:/home/nick/.local/bin:/home/nick/.cargo/bin:/home/nick/.npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 Environment="VIRTUAL_ENV=/home/nick/.hermes/hermes-agent/venv"
 Environment="HERMES_HOME=/home/nick/.hermes"
-Restart=on-failure
-RestartSec=30
+Restart=always
+RestartSec=5
+RestartMaxDelaySec=300
+RestartSteps=5
 RestartForceExitStatus=75
 KillMode=mixed
 KillSignal=SIGTERM
 ExecReload=/bin/kill -USR1 $MAINPID
-TimeoutStopSec=60
+TimeoutStopSec=90
 StandardOutput=journal
 StandardError=journal
 
