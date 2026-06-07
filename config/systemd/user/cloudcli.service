@@ -1,0 +1,25 @@
+[Unit]
+Description=CloudCLI server (Claude Code UI)
+After=network-online.target
+Wants=network-online.target
+StartLimitIntervalSec=0
+
+[Service]
+Type=simple
+ExecStart=/home/nick/.npm-global/bin/cloudcli start
+WorkingDirectory=/home/nick
+Environment="PATH=/home/nick/.local/bin:/home/nick/bin:/home/nick/.opencode/bin:/home/nick/.npm-global/bin:/home/nick/.openagents/nodejs/bin:/home/nick/.openagents/nodejs/node_modules/.bin:/home/nick/.cargo/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+Environment="CLAUDE_CLI_PATH=/home/nick/.npm-global/bin/openclaude"
+Environment="SERVER_PORT=3001"
+Restart=always
+RestartSec=5
+RestartMaxDelaySec=300
+RestartSteps=5
+KillMode=mixed
+KillSignal=SIGTERM
+TimeoutStopSec=30
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target
