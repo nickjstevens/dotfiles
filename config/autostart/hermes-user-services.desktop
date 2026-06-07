@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=Start Hermes and CloudCLI user services
+Comment=Reload user systemd units and start Hermes Gateway + CloudCLI after the encrypted home is mounted at desktop login
+Exec=/home/nick/Documents/dotfiles/config/autostart/start-hermes-user-services.sh
+Terminal=false
+X-GNOME-Autostart-enabled=true
+X-MATE-Autostart-enabled=true
