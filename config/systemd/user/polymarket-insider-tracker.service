@@ -1,0 +1,19 @@
+[Unit]
+Description=Polymarket Insider Tracker
+Documentation=https://github.com/pselamy/polymarket-insider-tracker
+After=network-online.target docker.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+WorkingDirectory=/home/nick/Documents/polymarket-insider-tracker
+EnvironmentFile=/home/nick/Documents/polymarket-insider-tracker/.env
+ExecStartPre=/usr/bin/docker-compose up -d postgres redis
+ExecStart=/home/nick/.local/bin/uv run python -m polymarket_insider_tracker
+Restart=always
+RestartSec=30
+TimeoutStopSec=45
+KillSignal=SIGTERM
+
+[Install]
+WantedBy=default.target
