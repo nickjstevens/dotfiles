@@ -26,6 +26,16 @@ POLPO_SERVICE_SOURCE="$DOTFILES_DIR/config/systemd/user/polpo.service"
 POLPO_SERVICE_TARGET="$HOME/.config/systemd/user/polpo.service"
 HERMES_SERVICE_SOURCE="$DOTFILES_DIR/config/systemd/user/hermes-gateway.service"
 HERMES_SERVICE_TARGET="$HOME/.config/systemd/user/hermes-gateway.service"
+POLYMARKET_SERVICE_SOURCE="$DOTFILES_DIR/config/systemd/user/polymarket-insider-tracker.service"
+POLYMARKET_SERVICE_TARGET="$HOME/.config/systemd/user/polymarket-insider-tracker.service"
+PROXMOX_BUFFALO_SCRIPT_SOURCE="$DOTFILES_DIR/bin/proxmox-buffalo-backup"
+PROXMOX_BUFFALO_SCRIPT_TARGET="$HOME/.local/bin/proxmox-buffalo-backup"
+PROXMOX_BUFFALO_SERVICE_SOURCE="$DOTFILES_DIR/config/systemd/user/proxmox-buffalo-backup.service"
+PROXMOX_BUFFALO_SERVICE_TARGET="$HOME/.config/systemd/user/proxmox-buffalo-backup.service"
+PROXMOX_BUFFALO_TIMER_SOURCE="$DOTFILES_DIR/config/systemd/user/proxmox-buffalo-backup.timer"
+PROXMOX_BUFFALO_TIMER_TARGET="$HOME/.config/systemd/user/proxmox-buffalo-backup.timer"
+USER_SERVICES_AUTOSTART_SOURCE="$DOTFILES_DIR/config/autostart/hermes-user-services.desktop"
+USER_SERVICES_AUTOSTART_TARGET="$HOME/.config/autostart/hermes-user-services.desktop"
 
 backup_if_needed() {
     local target="$1"
@@ -124,6 +134,42 @@ if [ -f "$HERMES_SERVICE_SOURCE" ]; then
     systemctl --user daemon-reload
     systemctl --user enable --now hermes-gateway.service
     echo "Enabled and started hermes-gateway.service"
+fi
+
+if [ -f "$POLYMARKET_SERVICE_SOURCE" ]; then
+    mkdir -p "$(dirname "$POLYMARKET_SERVICE_TARGET")"
+    backup_if_needed "$POLYMARKET_SERVICE_TARGET"
+    ln -sfn "$POLYMARKET_SERVICE_SOURCE" "$POLYMARKET_SERVICE_TARGET"
+    echo "Linked $POLYMARKET_SERVICE_TARGET -> $POLYMARKET_SERVICE_SOURCE"
+    systemctl --user daemon-reload
+    systemctl --user enable --now polymarket-insider-tracker.service
+    echo "Enabled and started polymarket-insider-tracker.service"
+fi
+
+if [ -f "$PROXMOX_BUFFALO_SCRIPT_SOURCE" ]; then
+    mkdir -p "$(dirname "$PROXMOX_BUFFALO_SCRIPT_TARGET")"
+    backup_if_needed "$PROXMOX_BUFFALO_SCRIPT_TARGET"
+    ln -sfn "$PROXMOX_BUFFALO_SCRIPT_SOURCE" "$PROXMOX_BUFFALO_SCRIPT_TARGET"
+    chmod +x "$PROXMOX_BUFFALO_SCRIPT_SOURCE"
+    echo "Linked $PROXMOX_BUFFALO_SCRIPT_TARGET -> $PROXMOX_BUFFALO_SCRIPT_SOURCE"
+fi
+
+if [ -f "$PROXMOX_BUFFALO_SERVICE_SOURCE" ] && [ -f "$PROXMOX_BUFFALO_TIMER_SOURCE" ]; then
+    mkdir -p "$(dirname "$PROXMOX_BUFFALO_SERVICE_TARGET")"
+    backup_if_needed "$PROXMOX_BUFFALO_SERVICE_TARGET"
+    backup_if_needed "$PROXMOX_BUFFALO_TIMER_TARGET"
+    ln -sfn "$PROXMOX_BUFFALO_SERVICE_SOURCE" "$PROXMOX_BUFFALO_SERVICE_TARGET"
+    ln -sfn "$PROXMOX_BUFFALO_TIMER_SOURCE" "$PROXMOX_BUFFALO_TIMER_TARGET"
+    systemctl --user daemon-reload
+    systemctl --user enable --now proxmox-buffalo-backup.timer
+    echo "Enabled proxmox-buffalo-backup.timer"
+fi
+
+if [ -f "$USER_SERVICES_AUTOSTART_SOURCE" ]; then
+    mkdir -p "$(dirname "$USER_SERVICES_AUTOSTART_TARGET")"
+    backup_if_needed "$USER_SERVICES_AUTOSTART_TARGET"
+    ln -sfn "$USER_SERVICES_AUTOSTART_SOURCE" "$USER_SERVICES_AUTOSTART_TARGET"
+    echo "Linked $USER_SERVICES_AUTOSTART_TARGET -> $USER_SERVICES_AUTOSTART_SOURCE"
 fi
 
 echo "Done. Start a new shell or run: source ~/.bashrc"

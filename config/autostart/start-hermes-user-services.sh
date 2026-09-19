@@ -6,7 +6,7 @@
 # dotfiles checkout.
 set -eu
 
-services="cloudcli.service hermes-gateway.service"
+services="cloudcli.service hermes-gateway.service polymarket-insider-tracker.service polpo.service proxmox-buffalo-backup.timer"
 log_dir="${XDG_STATE_HOME:-$HOME/.local/state}/hermes-user-services"
 log="$log_dir/autostart.log"
 mkdir -p "$log_dir"
@@ -42,14 +42,20 @@ wait_for_path() {
 }
 
 {
-  log_msg "=== Hermes/CloudCLI desktop autostart begin ==="
+  log_msg "=== user service desktop autostart begin ==="
   log_msg "USER=${USER:-unknown} HOME=$HOME XDG_RUNTIME_DIR=${XDG_RUNTIME_DIR:-unset}"
 
   # These must exist after the encrypted home has been mounted/decrypted.
   wait_for_path "$HOME/.config/systemd/user/cloudcli.service" "CloudCLI unit"
   wait_for_path "$HOME/.config/systemd/user/hermes-gateway.service" "Hermes gateway unit"
+  wait_for_path "$HOME/.config/systemd/user/polymarket-insider-tracker.service" "Polymarket tracker unit"
+  wait_for_path "$HOME/.config/systemd/user/polpo.service" "Polpo unit"
+  wait_for_path "$HOME/.config/systemd/user/proxmox-buffalo-backup.service" "Proxmox Buffalo backup service"
+  wait_for_path "$HOME/.config/systemd/user/proxmox-buffalo-backup.timer" "Proxmox Buffalo backup timer"
+
   wait_for_path "$HOME/.npm-global/bin/cloudcli" "CloudCLI binary"
   wait_for_path "$HOME/.hermes/hermes-agent/venv/bin/python" "Hermes venv Python"
+  wait_for_path "$HOME/.local/bin/uv" "uv binary"
 
   run_logged systemctl --user daemon-reload
   run_logged systemctl --user reset-failed $services || true
@@ -62,5 +68,5 @@ wait_for_path() {
   sleep 5
   run_logged systemctl --user status $services --no-pager --lines=40 || true
   run_logged systemctl --user show $services -p ActiveState -p SubState -p Result -p ExecMainStartTimestamp -p ActiveEnterTimestamp -p NRestarts --no-pager || true
-  log_msg "=== Hermes/CloudCLI desktop autostart end ==="
+  log_msg "=== user service desktop autostart end ==="
 } >>"$log" 2>&1

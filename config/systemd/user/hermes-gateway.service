@@ -11,9 +11,12 @@ WorkingDirectory=/home/nick/.hermes
 Environment="PATH=/home/nick/.hermes/hermes-agent/venv/bin:/home/nick/.hermes/hermes-agent/node_modules/.bin:/home/nick/.openagents/nodejs/bin:/home/nick/.local/bin:/home/nick/.cargo/bin:/home/nick/.npm-global/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
 Environment="VIRTUAL_ENV=/home/nick/.hermes/hermes-agent/venv"
 Environment="HERMES_HOME=/home/nick/.hermes"
+Environment="HERMES_SUPERVISED_CHILD=1"
 Restart=always
 RestartSec=5
 RestartForceExitStatus=75
+SuccessExitStatus=75
+RestartPreventExitStatus=78
 KillMode=mixed
 KillSignal=SIGTERM
 ExecReload=/bin/kill -USR1 $MAINPID

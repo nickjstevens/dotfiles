@@ -1,0 +1,76 @@
+#!/usr/bin/env bash
+# Keep one off-host copy of Proxmox recovery material on the Buffalo drive.
+set -euo pipefail
+
+readonly PVE_HOST="root@192.168.1.4"
+readonly BUFFALO_MOUNT="/media/nick/Buffalo"
+readonly BUFFALO_UUID="13b38d3a-d060-4bac-bfb6-16a5d69124d2"
+readonly DEST="$BUFFALO_MOUNT/Proxmox-backup"
+readonly LOG_DIR="${XDG_STATE_HOME:-$HOME/.local/state}/proxmox-buffalo-backup"
+readonly LOG_FILE="$LOG_DIR/backup.log"
+
+mkdir -p "$LOG_DIR"
+exec >>"$LOG_FILE" 2>&1
+printf '%s starting Proxmox Buffalo backup\n' "$(date -Is)"
+
+exec 9>"$LOG_DIR/backup.lock"
+flock -n 9 || { echo "A backup is already running"; exit 0; }
+
+mounted_uuid="$(findmnt -rn -T "$BUFFALO_MOUNT" -o UUID || true)"
+if [[ "$mounted_uuid" != "$BUFFALO_UUID" ]]; then
+  echo "Buffalo drive is not mounted at $BUFFALO_MOUNT with the expected UUID; refusing to write."
+  exit 1
+fi
+
+ssh -o BatchMode=yes -o ConnectTimeout=10 "$PVE_HOST" \
+  'mountpoint -q /mnt/pve/nas && test -d /mnt/pve/nas/backups && test -d /var/lib/vz/dump'
+
+# TrueNAS exports its system database through a short-lived local download URL.
+# Refresh the one retained copy before the NAS tree is mirrored to Buffalo.
+ssh -o BatchMode=yes -o ConnectTimeout=10 root@192.168.1.14 'set -eu
+result="$(midclt call core.download config.save '\''[{}]'\'' truenas-config.tar)"
+url="$(printf "%s" "$result" | python3 -c "import ast,sys; print(ast.literal_eval(sys.stdin.read())[1])")"
+install -d -m 700 /mnt/naspool/backups/truenas
+curl -fsS "http://127.0.0.1$url" -o /mnt/naspool/backups/truenas/truenas-config.tar.new
+test -s /mnt/naspool/backups/truenas/truenas-config.tar.new
+mv -f /mnt/naspool/backups/truenas/truenas-config.tar.new /mnt/naspool/backups/truenas/truenas-config.tar'
+
+mkdir -p "$DEST"/{naspool-backups,proxmox-host,etc-pve,proxmox-vzdump}
+rsync -aH --delete-delay --partial --partial-dir=.rsync-partial \
+  -e 'ssh -o BatchMode=yes -o ConnectTimeout=10' \
+  "$PVE_HOST:/mnt/pve/nas/backups/" "$DEST/naspool-backups/"
+rsync -aH --delete-delay \
+  -e 'ssh -o BatchMode=yes -o ConnectTimeout=10' \
+  "$PVE_HOST:/etc/" "$DEST/proxmox-host/etc/"
+rsync -aH --delete-delay \
+  -e 'ssh -o BatchMode=yes -o ConnectTimeout=10' \
+  "$PVE_HOST:/etc/pve/" "$DEST/etc-pve/"
+rsync -aH --delete-delay \
+  -e 'ssh -o BatchMode=yes -o ConnectTimeout=10' \
+  "$PVE_HOST:/root/" "$DEST/proxmox-host/root/"
+
+latest_backup() {
+  local pattern="$1"
+  ssh -o BatchMode=yes -o ConnectTimeout=10 "$PVE_HOST" \
+    "python3 -c 'from pathlib import Path; p=Path(\"/mnt/pve/nas/backups/proxmox/dump\"); xs=list(p.glob(\"$pattern\")); print(max(xs, key=lambda x: x.stat().st_mtime) if xs else \"\")'"
+}
+
+copy_latest() {
+  local pattern="$1"
+  local output="$2"
+  local source
+  source="$(latest_backup "$pattern")"
+  if [[ -z "$source" ]]; then
+    echo "No backup matching $pattern exists on nas-backups storage."
+    return 1
+  fi
+  rsync -aH --partial --partial-dir=.rsync-partial \
+    -e 'ssh -o BatchMode=yes -o ConnectTimeout=10' \
+    "$PVE_HOST:$source" "$DEST/proxmox-vzdump/$output"
+}
+
+copy_latest 'vzdump-lxc-103-*.tar.zst' 'docker-ct-103.tar.zst'
+copy_latest 'vzdump-qemu-101-*.vma.zst' 'truenas-vm-101.vma.zst'
+
+find "$DEST/proxmox-vzdump" -maxdepth 1 -type f \( -name '*.notes' -o -name '*.log' \) -delete
+printf '%s completed successfully\n' "$(date -Is)"

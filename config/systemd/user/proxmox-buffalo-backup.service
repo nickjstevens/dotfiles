@@ -1,0 +1,6 @@
+[Unit]
+Description=Copy current Proxmox recovery backups to the Buffalo drive
+
+[Service]
+Type=oneshot
+ExecStart=/home/nick/.local/bin/proxmox-buffalo-backup

@@ -1,0 +1,10 @@
+[Unit]
+Description=Weekly Proxmox backup copy to Buffalo
+
+[Timer]
+OnCalendar=Sun *-*-* 04:00:00
+Persistent=true
+Unit=proxmox-buffalo-backup.service
+
+[Install]
+WantedBy=timers.target
