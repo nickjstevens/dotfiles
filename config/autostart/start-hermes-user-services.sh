@@ -6,7 +6,7 @@
 # dotfiles checkout.
 set -eu
 
-services="cloudcli.service hermes-gateway.service polymarket-insider-tracker.service polpo.service proxmox-buffalo-backup.timer"
+services="cloudcli.service hermes-gateway.service polpo.service proxmox-buffalo-backup.timer"
 log_dir="${XDG_STATE_HOME:-$HOME/.local/state}/hermes-user-services"
 log="$log_dir/autostart.log"
 mkdir -p "$log_dir"
@@ -48,7 +48,6 @@ wait_for_path() {
   # These must exist after the encrypted home has been mounted/decrypted.
   wait_for_path "$HOME/.config/systemd/user/cloudcli.service" "CloudCLI unit"
   wait_for_path "$HOME/.config/systemd/user/hermes-gateway.service" "Hermes gateway unit"
-  wait_for_path "$HOME/.config/systemd/user/polymarket-insider-tracker.service" "Polymarket tracker unit"
   wait_for_path "$HOME/.config/systemd/user/polpo.service" "Polpo unit"
   wait_for_path "$HOME/.config/systemd/user/proxmox-buffalo-backup.service" "Proxmox Buffalo backup service"
   wait_for_path "$HOME/.config/systemd/user/proxmox-buffalo-backup.timer" "Proxmox Buffalo backup timer"

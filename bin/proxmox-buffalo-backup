@@ -35,10 +35,15 @@ curl -fsS "http://127.0.0.1$url" -o /mnt/naspool/backups/truenas/truenas-config.
 test -s /mnt/naspool/backups/truenas/truenas-config.tar.new
 mv -f /mnt/naspool/backups/truenas/truenas-config.tar.new /mnt/naspool/backups/truenas/truenas-config.tar'
 
-mkdir -p "$DEST"/{naspool-backups,proxmox-host,etc-pve,proxmox-vzdump}
+mkdir -p "$DEST"/{docker-root,truenas,proxmox-host,etc-pve,proxmox-vzdump}
+# Retain only the current Docker configuration/root backup and the TrueNAS
+# system export. Do not mirror historical NAS backup archives or media.
 rsync -aH --delete-delay --partial --partial-dir=.rsync-partial \
   -e 'ssh -o BatchMode=yes -o ConnectTimeout=10' \
-  "$PVE_HOST:/mnt/pve/nas/backups/" "$DEST/naspool-backups/"
+  "$PVE_HOST:/mnt/pve/nas/backups/root/" "$DEST/docker-root/"
+rsync -aH --delete-delay \
+  -e 'ssh -o BatchMode=yes -o ConnectTimeout=10' \
+  root@192.168.1.14:/mnt/naspool/backups/truenas/ "$DEST/truenas/"
 rsync -aH --delete-delay \
   -e 'ssh -o BatchMode=yes -o ConnectTimeout=10' \
   "$PVE_HOST:/etc/" "$DEST/proxmox-host/etc/"
@@ -69,8 +74,10 @@ copy_latest() {
     "$PVE_HOST:$source" "$DEST/proxmox-vzdump/$output"
 }
 
+# TrueNAS owns raw passed-through disks, so its multi-terabyte VM image is not
+# backed up by VZDump. The refreshed TrueNAS system-config export above is the
+# recoverable configuration copy; Docker CT 103 is the only VZDump payload.
 copy_latest 'vzdump-lxc-103-*.tar.zst' 'docker-ct-103.tar.zst'
-copy_latest 'vzdump-qemu-101-*.vma.zst' 'truenas-vm-101.vma.zst'
 
-find "$DEST/proxmox-vzdump" -maxdepth 1 -type f \( -name '*.notes' -o -name '*.log' \) -delete
+find "$DEST/proxmox-vzdump" -maxdepth 1 -type f \( -name '*.notes' -o -name '*.log' -o -name 'truenas-vm-101.vma.zst' \) -delete
 printf '%s completed successfully\n' "$(date -Is)"
